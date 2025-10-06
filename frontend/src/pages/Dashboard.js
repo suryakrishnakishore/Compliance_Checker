@@ -1,5 +1,6 @@
 import DashboardLayout from "../components/DashboardLayout";
 import ProductSection from "../components/ProductSection";
+import { TrendingUp, AlertCircle, CheckCircle, Clock } from "lucide-react";
 
 export default function Dashboard() {
   const products = [
@@ -18,7 +19,7 @@ export default function Dashboard() {
           inspector: "A Sharma",
           gps: "28.6159°N 77.200°E",
           date: "2024-10-26 15:45:12",
-          image: "/product1.jpg",
+          image: "https://images.pexels.com/photos/6544361/pexels-photo-6544361.jpeg?auto=compress&cs=tinysrgb&w=600",
         },
         {
           id: 2,
@@ -32,7 +33,7 @@ export default function Dashboard() {
           inspector: "R Verma",
           gps: "27.8910°N 78.089°E",
           date: "2024-09-22 14:33:10",
-          image: "/product2.jpg",
+          image: "https://images.pexels.com/photos/6487364/pexels-photo-6487364.jpeg?auto=compress&cs=tinysrgb&w=600",
         },
       ],
     },
@@ -51,7 +52,7 @@ export default function Dashboard() {
           inspector: "K Patel",
           gps: "26.501°N 80.391°E",
           date: "2024-08-12 11:21:05",
-          image: "/product3.jpg",
+          image: "https://images.pexels.com/photos/7129158/pexels-photo-7129158.jpeg?auto=compress&cs=tinysrgb&w=600",
         },
         {
           id: 4,
@@ -65,15 +66,75 @@ export default function Dashboard() {
           inspector: "N Singh",
           gps: "25.324°N 82.973°E",
           date: "2024-09-10 16:12:45",
-          image: "/product4.jpg",
+          image: "https://images.pexels.com/photos/6544361/pexels-photo-6544361.jpeg?auto=compress&cs=tinysrgb&w=600",
         },
       ],
     },
   ];
 
+  const stats = [
+    {
+      title: "Total Violations",
+      value: "47",
+      change: "+12%",
+      icon: AlertCircle,
+      gradient: "from-rose-500 to-red-500",
+      bg: "from-rose-50 to-red-50",
+    },
+    {
+      title: "Resolved",
+      value: "34",
+      change: "+8%",
+      icon: CheckCircle,
+      gradient: "from-emerald-500 to-teal-500",
+      bg: "from-emerald-50 to-teal-50",
+    },
+    {
+      title: "Active Inspectors",
+      value: "28",
+      change: "+3%",
+      icon: TrendingUp,
+      gradient: "from-sky-500 to-blue-500",
+      bg: "from-purple-50 to-fuchsia-50",
+    },
+  ];
+
   return (
     <DashboardLayout>
-      <h2 className="text-3xl font-bold mb-6">Flagged Product Dashboard</h2>
+      <div className="mb-8">
+        <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
+          Flagged Product Dashboard
+        </h1>
+        <p className="text-slate-600">Monitor and manage product compliance violations</p>
+      </div>
+
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 mb-10">
+        {stats.map((stat) => {
+          const Icon = stat.icon;
+          return (
+            <div
+              key={stat.title}
+              className={`bg-gradient-to-r ${stat.bg} rounded-2xl p-6 border border-slate-200 shadow-sm hover:shadow-xl transition-all duration-300 hover:scale-[1.02]`}
+            >
+              <div className="flex items-start justify-between mb-4">
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.gradient} flex items-center justify-center shadow-lg`}>
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+                <span className={`text-xs font-semibold px-2 py-1 rounded-full ${
+                  stat.change.startsWith('+')
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : 'bg-rose-100 text-rose-700'
+                }`}>
+                  {stat.change}
+                </span>
+              </div>
+              <p className="text-slate-600 text-sm mb-1">{stat.title}</p>
+              <p className="text-3xl font-bold text-slate-800">{stat.value}</p>
+            </div>
+          );
+        })}
+      </div>
+
       {products.map((section) => (
         <ProductSection key={section.platform} section={section} />
       ))}
