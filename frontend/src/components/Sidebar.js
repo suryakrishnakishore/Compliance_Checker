@@ -1,13 +1,13 @@
 import { Button } from "./ui/button";
 import { LayoutDashboard, FileText, Users, BarChart3, Settings, LogOut } from "lucide-react";
 
-export default function Sidebar() {
+export default function Sidebar({ currentPage, onNavigate }) {
   const sidebarOptions = [
-    { name: "Dashboard", icon: LayoutDashboard, active: true },
-    { name: "Reports", icon: FileText, active: false },
-    { name: "Inspectors", icon: Users, active: false },
-    { name: "Analytics", icon: BarChart3, active: false },
-    { name: "Settings", icon: Settings, active: false },
+    { name: "Dashboard", icon: LayoutDashboard },
+    { name: "Reports", icon: FileText },
+    { name: "Inspectors", icon: Users },
+    { name: "Analytics", icon: BarChart3 },
+    { name: "Settings", icon: Settings },
   ];
 
   return (
@@ -18,7 +18,7 @@ export default function Sidebar() {
             <span className="text-white font-bold text-xl">C</span>
           </div>
           <h1 className="text-2xl font-bold bg-gradient-to-r from-emerald-600 to-teal-600 bg-clip-text text-transparent">
-           CerebroTech
+            CerebroTech
           </h1>
         </div>
         <p className="text-xs text-slate-500 ml-13 pl-0.5">Product Compliance System</p>
@@ -27,17 +27,19 @@ export default function Sidebar() {
       <nav className="space-y-2 flex-1">
         {sidebarOptions.map((option) => {
           const Icon = option.icon;
+          const isActive = currentPage === option.name;
           return (
             <Button
               key={option.name}
               variant="ghost"
+              onClick={() => onNavigate(option.name)} 
               className={`w-full justify-start text-left group ${
-                option.active
+                isActive
                   ? "bg-gradient-to-r from-emerald-500 to-teal-500 text-white hover:from-emerald-600 hover:to-teal-600"
                   : "text-slate-700"
               }`}
             >
-              <Icon className={`w-5 h-5 mr-3 ${option.active ? "text-white" : "text-slate-400 group-hover:text-emerald-500"} transition-colors`} />
+              <Icon className={`w-5 h-5 mr-3 ${isActive ? "text-white" : "text-slate-400 group-hover:text-emerald-500"} transition-colors`} />
               <span className="font-medium">{option.name}</span>
             </Button>
           );

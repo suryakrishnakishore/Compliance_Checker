@@ -2,7 +2,7 @@ import DashboardLayout from "../components/DashboardLayout";
 import ProductSection from "../components/ProductSection";
 import { TrendingUp, AlertCircle, CheckCircle, Clock } from "lucide-react";
 
-export default function Dashboard() {
+export default function Dashboard({ onNavigate }) {
   const products = [
     {
       platform: "Amazon",
@@ -100,7 +100,7 @@ export default function Dashboard() {
   ];
 
   return (
-    <DashboardLayout>
+    <DashboardLayout currentPage="Dashboard" onNavigate={onNavigate}>
       <div className="mb-8">
         <h1 className="text-4xl font-bold bg-gradient-to-r from-slate-800 to-slate-600 bg-clip-text text-transparent mb-2">
           Flagged Product Dashboard

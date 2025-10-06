@@ -10,7 +10,7 @@ export default function ProductSection({ section }) {
 
   const platformBgColors = {
     Amazon: "from-amber-50 to-orange-50",
-    Flipkart: "from-sky-50 to-blue-50",
+    Flipkart: "from-orange-50 to-pink-50",
   };
 
   return (
