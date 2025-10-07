@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Amazon Product Compliance Checker</title>
+    <script src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      .gradient-bg {
+        background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      }
+      .card-hover {
+        transition: all 0.3s ease;
+      }
+      .card-hover:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+          0 10px 10px -5px rgba(0, 0, 0, 0.04);
+      }
+      .loading-spinner {
+        border: 3px solid #f3f3f3;
+        border-top: 3px solid #667eea;
+        border-radius: 50%;
+        width: 40px;
+        height: 40px;
+        animation: spin 1s linear infinite;
+      }
+      @keyframes spin {
+        0% {
+          transform: rotate(0deg);
+        }
+        100% {
+          transform: rotate(360deg);
+        }
+      }
+      .fade-in {
+        animation: fadeIn 0.5s ease-in;
+      }
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+          transform: translateY(20px);
+        }
+        to {
+          opacity: 1;
+          transform: translateY(0);
+        }
+      }
+    </style>
+  </head>
+  <body class="bg-gray-50">
+    <div id="root"></div>
+
+    <script type="text/babel">
+      const { useState, useEffect } = React
+
+      // Sample Amazon URLs for demonstration
+      const sampleUrls = [
+        'https://www.amazon.in/Sunfeast-Dark-Fantasy-Choco-Fills/dp/B083LJGP9M/ref=sr_1_5?crid=1GXYLATJQIM1W&dib=eyJ2IjoiMSJ9.qyBXHwXAvVJVMyPdec1jbdAUnffdrCk_1pNGe3EENQoZGqteAomSUxw33Bxz3CKR28TIcP8cDYMhYhAEg_pYDFI8sIA0_4oEep3pElPK-QWnV2_LDG_xlAhsVD0Ogptk10SQ9IirtRyMMA2z3K1WtlIPVVR1Am6j8uGhA-9K_OfvB1vQYqbu_LhDaeYnFME6GTcYmFZkpBVrP3ATGz3D3U51toIDsdRjk5xt_IwmV2JTo_kdZlLMNUqdHjvDR6otfKZEW5ugxLD4YKlFVYYYM52F3bqI7EftAHBoYfOu-6I.r9eCsH5fcHnM0V0aNCyFyVSbZwBWUzC3AaZ4MC33kBc&dib_tag=se&keywords=dark+fantasy+biscuit&qid=1759776198&sprefix=dark+fanta%2Caps%2C337&sr=8-5',
+        'https://www.amazon.in/Oreo-Cadbury-Family-Biscuit-Vanilla/dp/B09ZV4W4DF/ref=sr_1_5?crid=19SKCDCA87H23&dib=eyJ2IjoiMSJ9.UEZaFcOQ-net8SDvKusyzqBUCs-MMDCIADg-C7xoRiQELFZQE5OYlI1vUuNz_muHjXL2gbq3F0ksRKGTrHwaoL5bYoMLanCTNnI8LrOX3y3ZN91oginn8dkXSIwT2BEqPVdC4s7VXJynKlV6zXXMhwLjIjW2c88fpn5Ma0pyaaNrXos-fzcQRDiEjFYxbRgKoU_dt7I9jMKdjTW7YcXpML3K0kGfZBYEKtl4NZQ1YVo6LpnmQKTVTVEaFV8zH38-Y9wRVe58DnYdityPJ4rYS5xkCX-BYNK_0HdKUxuLS-Y.e3MEZNile4PRyy493ZE9rjgTAzzN4SpsmtoZjMaMg60&dib_tag=se&keywords=oreo+biscuit&qid=1759663302&sprefix=oreo+biscuit%2Caps%2C712&sr=8-5',
+        'https://www.amazon.in/Cadbury-Choclairs-Candies-713gm-Birthday/dp/B071CY3SJ8/ref=sr_1_1_sspa?crid=29A24BZY80XXM&dib=eyJ2IjoiMSJ9.yCwRmu3lDdyfBWCfXTMA7AJ0MxdETUkhdmif9IjqjQhHG_1uel3wdplKp9u7PPApv_d3rTmMRkQrqBN901dCK7h74IKhGOXhra9_-H4lHi0VPDp93FXbC8e8t-N-gxWjLG_uq2VsxQ4BQLsjIxDWI4boScP98pE9cGR8YlggTE7RkRD2U-7fk74R3mfib1A_lTO4OHuQR0hqeJkaRA55SZ-6Hkl3dQjL3BCXbFvnTA-dqw-wCogb3lLmP-xmCc259SRH8gs_utZHSBYfAHcdOeaVSBiO_aoCLldSH6usB8o.sVPk9irq7nXPK4yX7lbndsBhWHkKwIMEHl5PTwetR7o&dib_tag=se&keywords=eclairs%2Bchocolate%2Bpack&qid=1759776753&sprefix=eclairs%2B%2Caps%2C358&sr=8-1-spons&sp_csd=d2lkZ2V0TmFtZT1zcF9hdGY&th=1'
+      ]
+
+      function App() {
+        const [url, setUrl] = useState('')
+        const [loading, setLoading] = useState(false)
+        const [result, setResult] = useState(null)
+        const [error, setError] = useState('')
+        const [ocrResult, setOcrResult] = useState(null)
+        const [ocrLoading, setOcrLoading] = useState(false)
+
+        const handleScrape = async () => {
+          if (!url.trim()) {
+            setError('Please enter a valid Amazon URL')
+            return
+          }
+
+          setLoading(true)
+          setError('')
+          setResult(null)
+
+          try {
+            const response = await fetch('/api/scrape', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ url: url.trim() })
+            })
+
+            const data = await response.json()
+
+            if (data.success) {
+              setResult(data.data)
+            } else {
+              setError(data.error || 'Failed to scrape product data')
+            }
+          } catch (err) {
+            setError('Network error: ' + err.message)
+          } finally {
+            setLoading(false)
+          }
+        }
+
+        const handleOCR = async imageUrl => {
+          setOcrLoading(true)
+          setOcrResult(null)
+
+          try {
+            const response = await fetch('/api/ocr', {
+              method: 'POST',
+              headers: {
+                'Content-Type': 'application/json'
+              },
+              body: JSON.stringify({ imageUrl })
+            })
+
+            const data = await response.json()
+
+            if (data.success) {
+              setOcrResult(data.data)
+            } else {
+              setError('OCR failed: ' + data.error)
+            }
+          } catch (err) {
+            setError('OCR error: ' + err.message)
+          } finally {
+            setOcrLoading(false)
+          }
+        }
+
+        const handleSampleClick = sampleUrl => {
+          setUrl(sampleUrl)
+        }
+
+        return (
+          <div className='min-h-screen'>
+            {/* Header */}
+            <header className='gradient-bg text-white py-8'>
+              <div className='container mx-auto px-4'>
+                <div className='text-center'>
+                  <h1 className='text-4xl font-bold mb-2'>
+                    <i className='fas fa-search mr-3'></i>
+                    Amazon Product Compliance Checker
+                  </h1>
+                  <p className='text-xl opacity-90'>
+                    Extract product data and perform OCR analysis on product
+                    images
+                  </p>
+                </div>
+              </div>
+            </header>
+
+            <div className='container mx-auto px-4 py-8'>
+              {/* Input Section */}
+              <div className='bg-white rounded-lg shadow-lg p-6 mb-8'>
+                <h2 className='text-2xl font-semibold mb-4'>
+                  <i className='fas fa-link mr-2 text-blue-600'></i>
+                  Product URL Input
+                </h2>
+
+                <div className='mb-4'>
+                  <label className='block text-sm font-medium text-gray-700 mb-2'>
+                    Amazon Product URL
+                  </label>
+                  <input
+                    type='url'
+                    value={url}
+                    onChange={e => setUrl(e.target.value)}
+                    placeholder='Enter Amazon product URL...'
+                    className='w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent'
+                  />
+                </div>
+
+                {/* Sample URLs */}
+                <div className='mb-6'>
+                  <p className='text-sm text-gray-600 mb-3'>
+                    Try these sample URLs:
+                  </p>
+                  <div className='space-y-2'>
+                    {sampleUrls.map((sampleUrl, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSampleClick(sampleUrl)}
+                        className='block w-full text-left px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 rounded border text-blue-600 hover:text-blue-800 transition-colors overflow-x-auto'
+                      >
+                        {sampleUrl.length > 80
+                          ? sampleUrl.slice(0, 159) + '...'
+                          : sampleUrl}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <button
+                  onClick={handleScrape}
+                  disabled={loading}
+                  className='w-full bg-blue-600 hover:bg-blue-700 disabled:bg-blue-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center'
+                >
+                  {loading ? (
+                    <>
+                      <div className='loading-spinner mr-3'></div>
+                      Scraping Product Data...
+                    </>
+                  ) : (
+                    <>
+                      <i className='fas fa-magic mr-2'></i>
+                      Scrape Product Data
+                    </>
+                  )}
+                </button>
+              </div>
+
+              {/* Error Display */}
+              {error && (
+                <div className='bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-6'>
+                  <i className='fas fa-exclamation-triangle mr-2'></i>
+                  {error}
+                </div>
+              )}
+
+              {/* Results Section */}
+              {result && (
+                <div className='space-y-6 fade-in'>
+                  {/* Product Information */}
+                  <div className='bg-white rounded-lg shadow-lg p-6'>
+                    <h2 className='text-2xl font-semibold mb-4'>
+                      <i className='fas fa-box mr-2 text-green-600'></i>
+                      Product Information
+                    </h2>
+
+                    <div className='grid md:grid-cols-2 gap-6'>
+                      <div>
+                        <h3 className='font-semibold text-gray-700 mb-1'>
+                          Title
+                        </h3>
+                        <p className='text-gray-900 mb-4'>{result.title}</p>
+
+                        <h3 className='font-semibold text-gray-700 mb-1'>
+                          Brand
+                        </h3>
+                        <p className='text-gray-900 mb-4'>{result.brand}</p>
+
+                        <h3 className='font-semibold text-gray-700 mb-1'>
+                          Price
+                        </h3>
+                        <p className='text-green-600 font-bold text-xl mb-4'>
+                          {result.price}
+                        </p>
+                      </div>
+
+                      <div>
+                        <h3 className='font-semibold text-gray-700 mb-1'>
+                          Net Weight
+                        </h3>
+                        <p className='text-gray-900 mb-4'>
+                          {result.netWeight || 'Not specified'}
+                        </p>
+
+                        <h3 className='font-semibold text-gray-700 mb-1'>
+                          Product URL
+                        </h3>
+                        <a
+                          href={result.productUrl}
+                          target='_blank'
+                          rel='noopener noreferrer'
+                          className='text-blue-600 hover:text-blue-800 break-all'
+                        >
+                          View on Amazon
+                        </a>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Best Image Analysis */}
+                  {result.bestImage && (
+                    <div className='bg-white rounded-lg shadow-lg p-6'>
+                      <h2 className='text-2xl font-semibold mb-4'>
+                        <i className='fas fa-image mr-2 text-purple-600'></i>
+                        Best Product Image (OCR Ready)
+                      </h2>
+
+                      <div className='grid md:grid-cols-2 gap-6'>
+                        <div>
+                          <img
+                            src={result.bestImage}
+                            alt='Best product image'
+                            className='w-full rounded-lg shadow-md'
+                          />
+                        </div>
+
+                        <div>
+                          <button
+                            onClick={() => handleOCR(result.bestImage)}
+                            disabled={ocrLoading}
+                            className='w-full bg-purple-600 hover:bg-purple-700 disabled:bg-purple-400 text-white font-semibold py-3 px-6 rounded-lg transition-colors flex items-center justify-center mb-4'
+                          >
+                            {ocrLoading ? (
+                              <>
+                                <div className='loading-spinner mr-3'></div>
+                                Processing OCR...
+                              </>
+                            ) : (
+                              <>
+                                <i className='fas fa-eye mr-2'></i>
+                                Extract Text with OCR
+                              </>
+                            )}
+                          </button>
+
+                          <p className='text-sm text-gray-600'>
+                            This image was selected as the best candidate for
+                            OCR text extraction based on text density analysis.
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* OCR Results */}
+                  {ocrResult && (
+                    <div className='space-y-6 fade-in'>
+                      {/* Raw Text */}
+                      <div className='bg-white rounded-lg shadow-lg p-6'>
+                        <h2 className='text-2xl font-semibold mb-4'>
+                          <i className='fas fa-font mr-2 text-orange-600'></i>
+                          Raw OCR Text
+                        </h2>
+
+                        <div className='bg-gray-50 rounded-lg p-4 max-h-60 overflow-y-auto'>
+                          <pre className='whitespace-pre-wrap text-sm text-gray-800 font-mono'>
+                            {ocrResult.extractedText || 'No text detected'}
+                          </pre>
+                        </div>
+                      </div>
+
+                      {/* Formatted Data */}
+                      {ocrResult.formattedData && (
+                        <div className='bg-white rounded-lg shadow-lg p-6'>
+                          <h2 className='text-2xl font-semibold mb-4'>
+                            <i className='fas fa-table mr-2 text-green-600'></i>
+                            Structured Data Extraction
+                          </h2>
+
+                          {/* Summary */}
+                          {ocrResult.formattedData.summary && (
+                            <div className='bg-green-50 border border-green-200 rounded-lg p-4 mb-6'>
+                              <h3 className='font-semibold text-green-800 mb-2'>
+                                <i className='fas fa-info-circle mr-2'></i>
+                                Summary
+                              </h3>
+                              <p className='text-green-700'>
+                                {ocrResult.formattedData.summary}
+                              </p>
+                            </div>
+                          )}
+
+                          <div className='grid md:grid-cols-2 gap-6'>
+                            {/* Nutritional Information */}
+                            {ocrResult.formattedData.structuredData
+                              .nutritionalInfo && (
+                              <div className='bg-blue-50 border border-blue-200 rounded-lg p-4'>
+                                <h3 className='font-semibold text-blue-800 mb-3'>
+                                  <i className='fas fa-apple-alt mr-2'></i>
+                                  Nutritional Information
+                                </h3>
+                                <div className='space-y-2'>
+                                  {Object.entries(
+                                    ocrResult.formattedData.structuredData
+                                      .nutritionalInfo
+                                  ).map(([key, value]) => (
+                                    <div
+                                      key={key}
+                                      className='flex justify-between'
+                                    >
+                                      <span className='capitalize font-medium'>
+                                        {key}:
+                                      </span>
+                                      <span className='font-bold'>{value}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Weight Information */}
+                            {ocrResult.formattedData.structuredData
+                              .weightInfo && (
+                              <div className='bg-purple-50 border border-purple-200 rounded-lg p-4'>
+                                <h3 className='font-semibold text-purple-800 mb-3'>
+                                  <i className='fas fa-weight mr-2'></i>
+                                  Weight Information
+                                </h3>
+                                <div className='text-lg'>
+                                  <span className='font-bold text-purple-700'>
+                                    {
+                                      ocrResult.formattedData.structuredData
+                                        .weightInfo.value
+                                    }
+                                    {
+                                      ocrResult.formattedData.structuredData
+                                        .weightInfo.unit
+                                    }
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+
+                            {/* Ingredients */}
+                            {ocrResult.formattedData.structuredData
+                              .ingredients &&
+                              ocrResult.formattedData.structuredData.ingredients
+                                .length > 0 && (
+                                <div className='bg-yellow-50 border border-yellow-200 rounded-lg p-4 md:col-span-2'>
+                                  <h3 className='font-semibold text-yellow-800 mb-3'>
+                                    <i className='fas fa-list mr-2'></i>
+                                    Ingredients (
+                                    {
+                                      ocrResult.formattedData.structuredData
+                                        .ingredients.length
+                                    }
+                                    )
+                                  </h3>
+                                  <div className='grid grid-cols-1 md:grid-cols-2 gap-2'>
+                                    {ocrResult.formattedData.structuredData.ingredients.map(
+                                      (ingredient, index) => (
+                                        <div
+                                          key={index}
+                                          className='flex items-center'
+                                        >
+                                          <span className='w-6 h-6 bg-yellow-200 text-yellow-800 rounded-full flex items-center justify-center text-xs font-bold mr-2'>
+                                            {index + 1}
+                                          </span>
+                                          <span className='text-sm'>
+                                            {ingredient}
+                                          </span>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                            {/* Allergens */}
+                            {ocrResult.formattedData.structuredData.allergens &&
+                              ocrResult.formattedData.structuredData.allergens
+                                .length > 0 && (
+                                <div className='bg-red-50 border border-red-200 rounded-lg p-4 md:col-span-2'>
+                                  <h3 className='font-semibold text-red-800 mb-3'>
+                                    <i className='fas fa-exclamation-triangle mr-2'></i>
+                                    Allergen Information (
+                                    {
+                                      ocrResult.formattedData.structuredData
+                                        .allergens.length
+                                    }
+                                    )
+                                  </h3>
+                                  <div className='space-y-2'>
+                                    {ocrResult.formattedData.structuredData.allergens.map(
+                                      (allergen, index) => (
+                                        <div
+                                          key={index}
+                                          className='flex items-start'
+                                        >
+                                          <span className='w-6 h-6 bg-red-200 text-red-800 rounded-full flex items-center justify-center text-xs font-bold mr-2 mt-0.5 flex-shrink-0'>
+                                            {index + 1}
+                                          </span>
+                                          <span className='text-sm text-red-700'>
+                                            {allergen}
+                                          </span>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                            {/* Dates */}
+                            {ocrResult.formattedData.structuredData.dates &&
+                              ocrResult.formattedData.structuredData.dates
+                                .length > 0 && (
+                                <div className='bg-indigo-50 border border-indigo-200 rounded-lg p-4'>
+                                  <h3 className='font-semibold text-indigo-800 mb-3'>
+                                    <i className='fas fa-calendar mr-2'></i>
+                                    Important Dates
+                                  </h3>
+                                  <div className='space-y-2'>
+                                    {ocrResult.formattedData.structuredData.dates.map(
+                                      (date, index) => (
+                                        <div key={index} className='text-sm'>
+                                          <span className='font-medium'>
+                                            {date}
+                                          </span>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                            {/* Codes */}
+                            {ocrResult.formattedData.structuredData.codes &&
+                              ocrResult.formattedData.structuredData.codes
+                                .length > 0 && (
+                                <div className='bg-gray-50 border border-gray-200 rounded-lg p-4'>
+                                  <h3 className='font-semibold text-gray-800 mb-3'>
+                                    <i className='fas fa-barcode mr-2'></i>
+                                    Product Codes
+                                  </h3>
+                                  <div className='space-y-2'>
+                                    {ocrResult.formattedData.structuredData.codes.map(
+                                      (code, index) => (
+                                        <div key={index} className='text-sm'>
+                                          <span className='font-medium'>
+                                            {code.type}:
+                                          </span>
+                                          <span className='ml-2 font-mono bg-gray-200 px-2 py-1 rounded'>
+                                            {code.value}
+                                          </span>
+                                        </div>
+                                      )
+                                    )}
+                                  </div>
+                                </div>
+                              )}
+
+                            {/* Brand Information */}
+                            {ocrResult.formattedData.structuredData
+                              .brandInfo && (
+                              <div className='bg-teal-50 border border-teal-200 rounded-lg p-4'>
+                                <h3 className='font-semibold text-teal-800 mb-3'>
+                                  <i className='fas fa-tag mr-2'></i>
+                                  Brand Information
+                                </h3>
+                                <div className='text-sm'>
+                                  <span className='font-medium text-teal-700'>
+                                    {
+                                      ocrResult.formattedData.structuredData
+                                        .brandInfo
+                                    }
+                                  </span>
+                                </div>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  )}
+
+                  {/* All Images */}
+                  <div className='bg-white rounded-lg shadow-lg p-6'>
+                    <h2 className='text-2xl font-semibold mb-4'>
+                      <i className='fas fa-images mr-2 text-indigo-600'></i>
+                      All Product Images ({result.allImages.length})
+                    </h2>
+
+                    <div className='grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4'>
+                      {result.allImages.map((imageUrl, index) => (
+                        <div key={index} className='card-hover'>
+                          <img
+                            src={imageUrl}
+                            alt={`Product image ${index + 1}`}
+                            className='w-full h-32 object-cover rounded-lg shadow-md'
+                          />
+                          <p className='text-xs text-gray-600 mt-1 text-center'>
+                            Image {index + 1}
+                          </p>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+
+                  {/* Image Analysis Details */}
+                  {result.imageAnalysis && result.imageAnalysis.length > 0 && (
+                    <div className='bg-white rounded-lg shadow-lg p-6'>
+                      <h2 className='text-2xl font-semibold mb-4'>
+                        <i className='fas fa-chart-bar mr-2 text-teal-600'></i>
+                        Image Analysis Details
+                      </h2>
+
+                      <div className='overflow-x-auto'>
+                        <table className='w-full table-auto'>
+                          <thead>
+                            <tr className='bg-gray-50'>
+                              <th className='px-4 py-2 text-left'>Image</th>
+                              <th className='px-4 py-2 text-left'>
+                                Dimensions
+                              </th>
+                              <th className='px-4 py-2 text-left'>
+                                Text Density
+                              </th>
+                              <th className='px-4 py-2 text-left'>Status</th>
+                            </tr>
+                          </thead>
+                          <tbody>
+                            {result.imageAnalysis.map((analysis, index) => (
+                              <tr key={index} className='border-b'>
+                                <td className='px-4 py-2'>
+                                  <img
+                                    src={analysis.url}
+                                    alt={`Analysis ${index + 1}`}
+                                    className='w-16 h-16 object-cover rounded'
+                                  />
+                                </td>
+                                <td className='px-4 py-2'>
+                                  {analysis.dimensions.width} ×{' '}
+                                  {analysis.dimensions.height}
+                                </td>
+                                <td className='px-4 py-2'>
+                                  {analysis.textDensity.toLocaleString()}
+                                </td>
+                                <td className='px-4 py-2'>
+                                  {analysis.url === result.bestImage ? (
+                                    <span className='bg-green-100 text-green-800 px-2 py-1 rounded-full text-xs font-semibold'>
+                                      Best Choice
+                                    </span>
+                                  ) : (
+                                    <span className='bg-gray-100 text-gray-800 px-2 py-1 rounded-full text-xs'>
+                                      Analyzed
+                                    </span>
+                                  )}
+                                </td>
+                              </tr>
+                            ))}
+                          </tbody>
+                        </table>
+                      </div>
+                    </div>
+                  )}
+                </div>
+              )}
+            </div>
+
+            {/* Footer */}
+            <footer className='bg-gray-800 text-white py-6 mt-12'>
+              <div className='container mx-auto px-4 text-center'>
+                <p>
+                  &copy; 2025 Amazon Product Compliance Checker. Built with
+                  React and Express.
+                </p>
+              </div>
+            </footer>
+          </div>
+        )
+      }
+
+      ReactDOM.render(<App />, document.getElementById('root'))
+    </script>
+  </body>
+</html>
