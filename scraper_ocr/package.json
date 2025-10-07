@@ -21,7 +21,13 @@
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "type": "module",
-  "keywords": ["amazon", "scraping", "ocr", "product-analysis", "compliance"],
+  "keywords": [
+    "amazon",
+    "scraping",
+    "ocr",
+    "product-analysis",
+    "compliance"
+  ],
   "author": "",
   "license": "ISC",
   "description": "Amazon Product Compliance Checker with OCR capabilities"
