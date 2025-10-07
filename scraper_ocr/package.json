@@ -1,0 +1,28 @@
+{
+  "dependencies": {
+    "@google-cloud/vision": "^5.3.3",
+    "cheerio": "^1.1.2",
+    "child_process": "^1.0.2",
+    "cors": "^2.8.5",
+    "express": "^4.18.2",
+    "jimp": "^1.6.0",
+    "node-fetch": "^3.3.2",
+    "puppeteer": "^24.23.0",
+    "sharp": "^0.34.4",
+    "tesseract.js": "^6.0.1"
+  },
+  "name": "compliance_checker",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js",
+    "scraper": "node scraper.js",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "type": "module",
+  "keywords": ["amazon", "scraping", "ocr", "product-analysis", "compliance"],
+  "author": "",
+  "license": "ISC",
+  "description": "Amazon Product Compliance Checker with OCR capabilities"
+}
