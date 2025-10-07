@@ -19,11 +19,10 @@ export default function Reports({ onNavigate }) {
       id: 1,
       website: "Amazon India",
       url: "amazon.in",
-      totalProducts: 1247,
-      violations: 89,
-      resolved: 67,
-      pending: 22,
-      lastScanned: "2024-10-05 14:32:00",
+      totalProducts: 15,
+      violations: 2,
+      resolved: 0,
+      lastScanned: "2025-10-05 14:32:00",
       violationRate: "7.1%",
       trend: "down",
       categories: ["Food & Beverages", "Personal Care", "Health Supplements"],
@@ -33,11 +32,10 @@ export default function Reports({ onNavigate }) {
       id: 2,
       website: "Flipkart",
       url: "flipkart.com",
-      totalProducts: 892,
-      violations: 64,
-      resolved: 48,
-      pending: 16,
-      lastScanned: "2024-10-05 16:15:00",
+      totalProducts: 14,
+      violations: 2,
+      resolved: 0,
+      lastScanned: "2025-10-05 16:15:00",
       violationRate: "7.2%",
       trend: "up",
       categories: ["Groceries", "Beauty", "Wellness"],
@@ -163,11 +161,11 @@ export default function Reports({ onNavigate }) {
         </div>
 
         <div className="flex gap-3">
-          <Button className="flex-1">
-            <Search className="w-4 h-4 mr-2" />
-            Generate Reports
+          <Button className="flex flex-row justify-center gap-2 items-center w-full">
+            <Search className="w-4 h-4" />
+            <p className="">Generate Reports</p>
           </Button>
-          <Button variant="outline">
+          <Button variant="outline" className="flex flex-col items-center">
             <Download className="w-4 h-4 mr-2" />
             Export All
           </Button>
@@ -179,7 +177,7 @@ export default function Reports({ onNavigate }) {
           <div className="flex items-start justify-between mb-4">
             <div>
               <p className="text-sm text-slate-600 mb-1">Total Websites Monitored</p>
-              <p className="text-4xl font-bold text-emerald-700">24</p>
+              <p className="text-4xl font-bold text-emerald-700">2</p>
             </div>
             <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center shadow-lg">
               <TrendingUp className="w-6 h-6 text-white" />
@@ -237,7 +235,7 @@ export default function Reports({ onNavigate }) {
                     </Badge>
                   </div>
 
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-4">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-4 mb-4">
                     <div className="bg-gradient-to-br from-slate-50 to-slate-100 rounded-lg p-3 border border-slate-200">
                       <p className="text-xs text-slate-500 mb-1">Total Products</p>
                       <p className="text-xl font-bold text-slate-800">{report.totalProducts.toLocaleString()}</p>
@@ -249,10 +247,6 @@ export default function Reports({ onNavigate }) {
                     <div className="bg-gradient-to-br from-emerald-50 to-teal-50 rounded-lg p-3 border border-emerald-200">
                       <p className="text-xs text-emerald-600 mb-1">Resolved</p>
                       <p className="text-xl font-bold text-emerald-700">{report.resolved}</p>
-                    </div>
-                    <div className="bg-gradient-to-br from-amber-50 to-orange-50 rounded-lg p-3 border border-amber-200">
-                      <p className="text-xs text-amber-600 mb-1">Pending</p>
-                      <p className="text-xl font-bold text-amber-700">{report.pending}</p>
                     </div>
                   </div>
 
@@ -307,7 +301,7 @@ export default function Reports({ onNavigate }) {
 
                   <Button
                     variant="outline"
-                    className="w-full"
+                    className="w-full flex flex-row justify-center gap-2 items-center"
                     onClick={() => handleDownloadPDF(report)}
                   >
                     <Download className="w-4 h-4 mr-2" />

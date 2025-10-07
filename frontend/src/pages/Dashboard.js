@@ -9,7 +9,7 @@ export default function Dashboard({ onNavigate }) {
       items: [
         {
           id: 1,
-          name: "Beef Masala Pack",
+          name: "Oreo Biscuit Pack",
           mrp: "₹199.00",
           quantity: "200 ml",
           mfg: "JAN 2024",
@@ -19,11 +19,11 @@ export default function Dashboard({ onNavigate }) {
           inspector: "A Sharma",
           gps: "28.6159°N 77.200°E",
           date: "2024-10-26 15:45:12",
-          image: "https://images.pexels.com/photos/6544361/pexels-photo-6544361.jpeg?auto=compress&cs=tinysrgb&w=600",
+          image: "https://m.media-amazon.com/images/I/61VMo0FAcHL._SL1100_.jpg",
         },
         {
           id: 2,
-          name: "Spice Mix Pouch",
+          name: "Dark Fantasy Choco Fills",
           mrp: "₹149.00",
           quantity: "100 g",
           mfg: "FEB 2024",
@@ -33,7 +33,7 @@ export default function Dashboard({ onNavigate }) {
           inspector: "R Verma",
           gps: "27.8910°N 78.089°E",
           date: "2024-09-22 14:33:10",
-          image: "https://images.pexels.com/photos/6487364/pexels-photo-6487364.jpeg?auto=compress&cs=tinysrgb&w=600",
+          image: "https://m.media-amazon.com/images/I/91nkpo2PEBL._SL1500_.jpg",
         },
       ],
     },
@@ -42,7 +42,7 @@ export default function Dashboard({ onNavigate }) {
       items: [
         {
           id: 3,
-          name: "Snack Pouch",
+          name: "Eclairs Chocolates Pack",
           mrp: "₹99.00",
           quantity: "150 g",
           mfg: "MAR 2024",
@@ -52,11 +52,11 @@ export default function Dashboard({ onNavigate }) {
           inspector: "K Patel",
           gps: "26.501°N 80.391°E",
           date: "2024-08-12 11:21:05",
-          image: "https://images.pexels.com/photos/7129158/pexels-photo-7129158.jpeg?auto=compress&cs=tinysrgb&w=600",
+          image: "https://m.media-amazon.com/images/I/61gj7rZRRRL._SL1100_.jpg",
         },
         {
           id: 4,
-          name: "Energy Drink Can",
+          name: "Munch Chocolates Pack of 50",
           mrp: "₹75.00",
           quantity: "250 ml",
           mfg: "APR 2024",
@@ -66,7 +66,7 @@ export default function Dashboard({ onNavigate }) {
           inspector: "N Singh",
           gps: "25.324°N 82.973°E",
           date: "2024-09-10 16:12:45",
-          image: "https://images.pexels.com/photos/6544361/pexels-photo-6544361.jpeg?auto=compress&cs=tinysrgb&w=600",
+          image: "https://m.media-amazon.com/images/I/815VO6AfMWL._SL1500_.jpg",
         },
       ],
     },
@@ -75,7 +75,7 @@ export default function Dashboard({ onNavigate }) {
   const stats = [
     {
       title: "Total Violations",
-      value: "47",
+      value: "4",
       change: "+12%",
       icon: AlertCircle,
       gradient: "from-rose-500 to-red-500",
@@ -83,7 +83,7 @@ export default function Dashboard({ onNavigate }) {
     },
     {
       title: "Resolved",
-      value: "34",
+      value: "0",
       change: "+8%",
       icon: CheckCircle,
       gradient: "from-emerald-500 to-teal-500",
@@ -91,7 +91,7 @@ export default function Dashboard({ onNavigate }) {
     },
     {
       title: "Active Inspectors",
-      value: "28",
+      value: "6",
       change: "+3%",
       icon: TrendingUp,
       gradient: "from-sky-500 to-blue-500",

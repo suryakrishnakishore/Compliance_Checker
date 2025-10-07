@@ -8,7 +8,7 @@ export default function Analytics({ onNavigate }) {
   const kpiCards = [
     {
       title: "Total Violations (This Month)",
-      value: "1,247",
+      value: "4",
       change: "+12.5%",
       trend: "up",
       icon: AlertTriangle,
@@ -26,16 +26,7 @@ export default function Analytics({ onNavigate }) {
       bg: "from-emerald-50 to-teal-50",
       description: "Average resolution time: 4.2 days",
     },
-    {
-      title: "Avg Response Time",
-      value: "2.8 hrs",
-      change: "-18%",
-      trend: "down",
-      icon: TrendingDown,
-      gradient: "from-sky-500 to-blue-500",
-      bg: "from-sky-50 to-blue-50",
-      description: "Improved from last month",
-    },
+    
     {
       title: "Compliance Score",
       value: "92.4%",
@@ -116,7 +107,7 @@ export default function Analytics({ onNavigate }) {
         </div>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-8">
         {kpiCards.map((kpi) => {
           const Icon = kpi.icon;
           return (

@@ -113,7 +113,7 @@ export default function Inspectors({ onNavigate }) {
   const stats = [
     {
       title: "Total Inspectors",
-      value: "28",
+      value: "6",
       change: "+3",
       icon: User,
       gradient: "from-emerald-500 to-teal-500",
@@ -121,7 +121,7 @@ export default function Inspectors({ onNavigate }) {
     },
     {
       title: "Active Now",
-      value: "24",
+      value: "6",
       change: "86%",
       icon: TrendingUp,
       gradient: "from-sky-500 to-blue-500",
@@ -137,7 +137,7 @@ export default function Inspectors({ onNavigate }) {
     },
     {
       title: "Total Inspections",
-      value: "2,035",
+      value: "40",
       change: "+156",
       icon: Clock,
       gradient: "from-amber-500 to-orange-500",
